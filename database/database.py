@@ -20,4 +20,13 @@ class Database:
     def fetch_one(self, query, params=None):
         cursor = self.connection.cursor()
         cursor.execute(query, params)
-        return cursor.fetchone()
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+    
+    def fetch_all(self, query, params=None):
+        cursor = self.connection.cursor()
+        cursor.execute(query, params or ())
+        result = cursor.fetchall()
+        cursor.close()
+        return result

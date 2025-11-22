@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify, render_template
-
 from database.database import Database
 import bcrypt
 
@@ -13,6 +12,12 @@ db = Database(
 )
 db.connect()
 
+# 👉 Ruta GET para mostrar el login
+@app.get("/login")
+def login_page():
+    return render_template("login.html")
+
+# 👉 Ruta POST para procesar el login
 @app.post("/login")
 def login():
     data = request.get_json()
@@ -33,7 +38,7 @@ def login():
 
     return jsonify({"success": False})
 
-
+# Vista de las preguntas
 @app.get("/securityzone")
 def securityzone_page():
     return render_template("securityzone.html")

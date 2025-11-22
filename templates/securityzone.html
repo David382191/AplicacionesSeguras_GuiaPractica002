@@ -1,3 +1,130 @@
-<div class="mb-3">
-    Hola, este es el circulo de suguridad.
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Zona de Seguridad</title>
+
+    <!-- Bootstrap -->
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link 
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: #f3f4f6;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .icon-card {
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .icon-card:hover {
+            background: #e0e7ff;
+            transform: scale(1.05);
+        }
+        #preguntaBox {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card shadow p-4" style="width: 450px;">
+    <h3 class="text-center mb-3">Verificación de Seguridad</h3>
+
+    <p class="text-muted text-center">Seleccione una pregunta de seguridad</p>
+
+    <div class="row" id="opcionesPreguntas">
+        <!-- Aquí aparecen las tarjetas con iconos -->
+    </div>
+
+    <!-- Caja oculta para mostrar la pregunta seleccionada -->
+    <div id="preguntaBox" class="mt-4">
+        <h5 id="textoPregunta"></h5>
+
+        <input type="text" id="respuesta" class="form-control mt-2" placeholder="Ingrese su respuesta">
+
+        <button class="btn btn-primary w-100 mt-3" id="btnValidar">
+            Validar respuesta
+
+        </button>
+    </div>
 </div>
+
+
+<script>
+// 1. Obtener nro de cuenta desde la URL
+const params = new URLSearchParams(window.location.search);
+const nroCuenta = params.get("nro");
+
+// 2. Cargar las preguntas del usuario
+async function cargarPreguntas() {
+    const response = await fetch(`/api/preguntas?nro=${nroCuenta}`);
+    const data = await response.json();
+
+    if (!data.success) {
+        alert("No se pudo cargar preguntas de seguridad");
+        return;
+    }
+
+    const contenedor = document.getElementById("opcionesPreguntas");
+
+    data.preguntas.forEach((p, index) => {
+        contenedor.innerHTML += `
+            <div class="col-6 mb-3">
+                <div class="card icon-card p-3 text-center" onclick="mostrarPregunta(${p.id}, '${p.pregunta}')">
+                    <i class="fa fa-question-circle fa-3x text-primary mb-2"></i>
+                    <h6>Opción ${index + 1}</h6>
+                </div>
+            </div>
+        `;
+    });
+}
+
+cargarPreguntas();
+
+
+// 3. Cuando el usuario hace clic en un icono
+function mostrarPregunta(id, pregunta) {
+    window.preguntaID = id;
+    document.getElementById("textoPregunta").textContent = pregunta;
+
+    // mostrar caja de pregunta
+    document.getElementById("preguntaBox").style.display = "block";
+}
+
+
+// 4. Validar respuesta
+document.getElementById("btnValidar").addEventListener("click", async () => {
+    const respuesta = document.getElementById("respuesta").value;
+
+    const response = await fetch("/api/validar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id: window.preguntaID,
+            respuesta: respuesta
+        })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        window.location.href = `/home?nro=${nroCuenta}`;
+        //window.location.href = "/home";  // Pantalla bancaria
+    } else {
+        alert("Respuesta incorrecta");
+    }
+});
+</script>
+
+</body>
+</html>

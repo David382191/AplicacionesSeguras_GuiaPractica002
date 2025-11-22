@@ -1,14 +1,79 @@
-<form id="loginForm">
-  <div class="mb-3">
-    <label class="form-label">Usuario</label>
-    <input type="text" class="form-control" id="usuario" required>
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Contraseña</label>
-    <input type="password" class="form-control" id="contrasena" required>
-  </div>
-  <button class="btn btn-primary" type="submit">Ingresar</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <!-- Bootstrap -->
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+        rel="stylesheet">
+
+    <!-- Íconos -->
+    <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #4e73df, #1cc88a);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            border-radius: 20px;
+            padding: 30px;
+        }
+        .title {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="col-md-4">
+    <div class="card shadow-lg">
+
+        <h3 class="text-center mb-4 title">
+            <i class="fa fa-user-shield"></i> Iniciar Sesión
+        </h3>
+
+        <!-- Tu formulario -->
+        <form id="loginForm">
+
+            <div class="mb-3">
+                <label class="form-label">Usuario</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    <input type="text" class="form-control" id="usuario" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <input type="password" class="form-control" id="contrasena" required>
+                </div>
+            </div>
+
+            <button class="btn btn-primary w-100 mt-3" type="submit">
+                <i class="fa fa-right-to-bracket"></i> Entrar
+            </button>
+
+            <button id="btnRegresar" class="btn btn-secondary mt-3">Regresar</button>
+
+        </form>
+    </div>
+</div>
+
+
 
 <script>
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
@@ -26,10 +91,24 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     const data = await response.json();
 
     if (data.success) {
-        // Redirigir a tu interfaz de protocolo de seguridad
-        window.location.href = "/securityzone";
+        
+        window.location.href = "/securityzone?nro=" + data.nro_cuenta;
+
     } else {
         alert("Usuario o contraseña incorrectos");
     }
 });
+
+
+
 </script>
+
+    
+    <script>
+        document.getElementById("btnRegresar").addEventListener("click", () => {
+            window.location.href = "/";
+        });
+    </script>
+
+</body>
+</html>

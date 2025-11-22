@@ -1,18 +1,96 @@
-<h2>Bienvenido, [Nombre]</h2>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Tipo Cliente</th>
-      <th>Tipo Cuenta</th>
-      <th>Saldo Contable</th>
-      <th>Saldo Disponible</th>
-      <th>Estado</th>
-      <th>Retenciones</th>
-      <th>Autorizaciones</th>
-    </tr>
-  </thead>
-  <tbody id="tablaCuenta">
-    <!-- Se llenará dinámicamente desde backend -->
-  </tbody>
-</table>
-<a href="index.html" class="btn btn-danger mt-3">Cerrar Sesión</a>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cuenta Bancaria</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; padding: 40px; }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 450px;
+            margin: auto;
+            box-shadow: 0 0 10px #0002;
+            position: relative;
+        }
+        .title { font-size: 22px; text-align: center; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        td { padding: 8px; border-bottom: 1px solid #ddd; }
+
+        /* Botón de salida */
+        #btnSalir {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 12px;
+            background: #d9534f;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #btnSalir:hover { background: #c9302c; }
+
+        /* Nombre del cliente */
+        #nombreCliente {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <button id="btnSalir">Cerrar sesión</button>
+
+    <!-- Nombre del dueño de la cuenta -->
+    <div id="nombreCliente"></div>
+
+    <div class="title">Información de la Cuenta</div>
+    <table id="tabla"></table>
+</div>
+
+<script>
+    // Obtener nro de cuenta enviado por la URL
+    const params = new URLSearchParams(window.location.search);
+    const nro = params.get("nro");
+
+    // Cargar datos de la API
+    fetch(`/api/cuenta?nro=${nro}`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) {
+                document.getElementById("tabla").innerHTML =
+                    "<tr><td>Error cargando la cuenta</td></tr>";
+                return;
+            }
+
+            const c = data.cuenta;
+
+            // Mostrar nombre del dueño arriba de la tabla
+            document.getElementById("nombreCliente").textContent =
+                `Cliente: ${c.nombre} ${c.apellido}`;
+
+            document.getElementById("tabla").innerHTML = `
+                <tr><td>Número de Cuenta</td><td><b>${c.nro_cuenta}</b></td></tr>
+                <tr><td>Tipo de Cliente</td><td>${c.tipo_cliente}</td></tr>
+                <tr><td>Tipo de Cuenta</td><td>${c.tipo_cuenta}</td></tr>
+                <tr><td>Saldo Contable</td><td>$${c.saldo_contable}</td></tr>
+                <tr><td>Saldo Disponible</td><td>$${c.saldo_disponible}</td></tr>
+                <tr><td>Estado</td><td>${c.estado}</td></tr>
+                <tr><td>Retenciones</td><td>$${c.retenciones}</td></tr>
+                <tr><td>Autorizaciones</td><td>${c.autorizaciones}</td></tr>
+            `;
+        });
+
+    // Botón para regresar al login
+    document.getElementById("btnSalir").addEventListener("click", () => {
+        window.location.href = "/login";
+    });
+</script>
+
+</body>
+</html>
